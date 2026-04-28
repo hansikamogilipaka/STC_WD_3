@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional Quiz App</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1d2671, #c33764);
+    color: white;
+}
+.container {
+    width: 420px;
+    padding: 25px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+}
+.header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.header h1 {
+    font-size: 24px;
+}
+.progress {
+    font-size: 14px;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+#question {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+.option {
+    display: block;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.option:hover {
+    background: rgba(255,255,255,0.3);
+}
+.correct {
+    background: #28a745 !important;
+}
+
+.wrong {
+    background: #dc3545 !important;
+}
+.buttons {
+    margin-top: 15px;
+    text-align: center;
+}
+
+button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    margin: 5px;
+    transition: 0.3s;
+}
+
+.next {
+    background: #17a2b8;
+    color: white;
+}
+
+.restart {
+    background: #ffc107;
+    color: black;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+#result {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 15px;
+}
+.hidden {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>🧠 Quiz Game</h1>
+    </div>
+
+    <div id="quiz-box">
+        <div class="progress" id="progress"></div>
+        <div id="question"></div>
+        <div id="options"></div>
+
+        <div class="buttons">
+            <button class="next" onclick="nextQuestion()">Next</button>
+        </div>
+    </div>
+
+    <div id="result" class="hidden"></div>
+
+    <div class="buttons">
+        <button class="restart" onclick="restartQuiz()">Restart</button>
+    </div>
+
+</div>
+
+<script>
+const questions = [
+    {
+        q: "What does HTML stand for?",
+        options: [
+            "Hyper Text Markup Language",
+            "High Text Machine Language",
+            "Hyper Tool Multi Language",
+            "None of these"
+        ],
+        answer: 0
+    },
+    {
+        q: "Which language is used for styling web pages?",
+        options: ["HTML", "CSS", "Python", "Java"],
+        answer: 1
+    },
+    {
+        q: "Which is a JavaScript library?",
+        options: ["Django", "Flask", "React", "Laravel"],
+        answer: 2
+    },
+    {
+        q: "Which tag is used for headings?",
+        options: ["<p>", "<h1>", "<div>", "<span>"],
+        answer: 1
+    },
+    {
+        q: "Which company developed JavaScript?",
+        options: ["Google", "Netscape", "Microsoft", "Apple"],
+        answer: 1
+    }
+];
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+
+/* ===== LOAD QUESTION ===== */
+function loadQuestion() {
+    answered = false;
+
+    let q = questions[currentIndex];
+
+    document.getElementById("progress").innerText =
+        `Question ${currentIndex + 1} of ${questions.length}`;
+
+    document.getElementById("question").innerText = q.q;
+
+    let optionsHTML = "";
+
+    q.options.forEach((opt, index) => {
+        optionsHTML += `
+            <div class="option" onclick="selectAnswer(this, ${index})">
+                ${opt}
+            </div>
+        `;
+    });
+
+    document.getElementById("options").innerHTML = optionsHTML;
+}
+
+function selectAnswer(element, index) {
+    if (answered) return;
+
+    answered = true;
+
+    let correctIndex = questions[currentIndex].answer;
+    let options = document.querySelectorAll(".option");
+
+    options.forEach((opt, i) => {
+        if (i === correctIndex) {
+            opt.classList.add("correct");
+        } else if (i === index) {
+            opt.classList.add("wrong");
+        }
+    });
+
+    if (index === correctIndex) {
+        score++;
+    }
+}
+
+function nextQuestion() {
+    if (!answered) {
+        alert("Please select an answer first!");
+        return;
+    }
+
+    currentIndex++;
+
+    if (currentIndex < questions.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById("quiz-box").classList.add("hidden");
+
+    let resultText = `🎉 Your Score: ${score} / ${questions.length}`;
+
+    document.getElementById("result").innerText = resultText;
+    document.getElementById("result").classList.remove("hidden");
+}
+
+function restartQuiz() {
+    currentIndex = 0;
+    score = 0;
+
+    document.getElementById("quiz-box").classList.remove("hidden");
+    document.getElementById("result").classList.add("hidden");
+
+    loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
